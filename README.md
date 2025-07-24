@@ -4,7 +4,7 @@ This repository provides command line utilities built on top of [WhisperX](https
 
 * `transcriber_main.py` – batch transcription script with optional alignment and diarization.
 * `transcriber_start.py` – FastAPI service exposing HTTP endpoints for transcription.
-* `stereo_dialog.py` – helper that takes a stereo call recording, splits the two channels and produces a single dialogue transcript with the left channel labeled as **caller** and the right channel labeled as **client**.
+* `stereo_dialog.py` – helper that takes a stereo call recording, splits the two channels and produces a single dialogue transcript with the left channel labeled as **client** and the right channel labeled as **caller**.
 
 Example usage for a stereo file:
 

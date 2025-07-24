@@ -2,8 +2,8 @@
 """Split stereo call recordings into two mono channels and produce a combined
 dialogue transcript using WhisperX models from ``transcriber_main.py``.
 
-Each channel is transcribed separately and labeled as ``caller`` (left) and
-``client`` (right). Segments from both channels are merged by start time.
+Each channel is transcribed separately and labeled as ``client`` (left) and
+``caller`` (right). Segments from both channels are merged by start time.
 """
 
 import os
@@ -72,13 +72,13 @@ def transcribe_stereo_dialog(inp: str) -> Dict:
         right_aligned = transcribe_channel(right)
 
         for s in left_aligned["segments"]:
-            s["speaker"] = "caller"
-        for w in left_aligned.get("word_segments", []):
-            w["speaker"] = "caller"
-        for s in right_aligned["segments"]:
             s["speaker"] = "client"
-        for w in right_aligned.get("word_segments", []):
+        for w in left_aligned.get("word_segments", []):
             w["speaker"] = "client"
+        for s in right_aligned["segments"]:
+            s["speaker"] = "caller"
+        for w in right_aligned.get("word_segments", []):
+            w["speaker"] = "caller"
 
         segments = left_aligned["segments"] + right_aligned["segments"]
         segments.sort(key=lambda s: s["start"])
