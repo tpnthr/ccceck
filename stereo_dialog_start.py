@@ -15,7 +15,8 @@ import urllib.parse
 from typing import List, Optional, Tuple, Dict
 
 import requests
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 import uvicorn
 
@@ -138,6 +139,14 @@ def gen_vtt(segments: List[Dict]) -> str:
         lines.append(f"{ts(s['start'])} --> {ts(s['end'])}\n{s.get('speaker','')} {s['text'].strip()}\n")
     return "\n".join(lines)
 
+
+def format_segments(segments: List[Dict]) -> str:
+    lines = []
+    for s in segments:
+        spk = s.get("speaker") or "SPK"
+        lines.append(f"[{s['start']:7.2f} - {s['end']:7.2f}] {spk}: {s['text']}")
+    return "\n".join(lines)
+
 # -------- Stereo helpers --------
 
 def split_stereo(path: str) -> Tuple[str, str]:
@@ -232,11 +241,18 @@ def health():
     return {"ok": True, "device": DEVICE, "model": WHISPER_MODEL}
 
 
-@app.post("/transcribe")
+@app.post("/transcribe", response_class=PlainTextResponse)
 def api_transcribe(req: TranscribeRequest):
     lang = req.language or LANGUAGE_DEFAULT
     need_align = req.need_alignment if req.need_alignment is not None else bool(ALIGN_MODEL)
-    return transcribe_stereo(req.input, lang, need_align, req.return_srt, req.return_vtt)
+    res = transcribe_stereo(req.input, lang, need_align, req.return_srt, req.return_vtt)
+    if not res.get("ok"):
+        raise HTTPException(status_code=400, detail=res.get("error"))
+    if req.return_srt:
+        return res.get("srt", "")
+    if req.return_vtt:
+        return res.get("vtt", "")
+    return format_segments(res.get("segments", []))
 
 
 @app.post("/batch_transcribe")
