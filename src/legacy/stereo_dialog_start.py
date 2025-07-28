@@ -189,13 +189,13 @@ def transcribe_stereo(inp: str, language: str, need_alignment: bool, want_srt: b
         right_a = transcribe_channel(right, language, need_alignment)
 
         for s in left_a["segments"]:
-            s["speaker"] = "caller"
-        for w in left_a.get("word_segments", []):
-            w["speaker"] = "caller"
-        for s in right_a["segments"]:
             s["speaker"] = "client"
-        for w in right_a.get("word_segments", []):
+        for w in left_a.get("word_segments", []):
             w["speaker"] = "client"
+        for s in right_a["segments"]:
+            s["speaker"] = "caller"
+        for w in right_a.get("word_segments", []):
+            w["speaker"] = "caller"
 
         segments = left_a["segments"] + right_a["segments"]
         segments.sort(key=lambda s: s["start"])
