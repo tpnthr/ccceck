@@ -90,7 +90,8 @@ def transcribe(req: TranscribeRequest):
         left_path, right_path = split_stereo(audio_file)
         tmp_files.extend([left_path, right_path])
 
-        left_words = transcribe_channel(left_path, language="pl")
+        # left_words = transcribe_channel(left_path, language="pl")
+        left_words = transcribe_channel(left_path)
         right_words = transcribe_channel(right_path)
 
         for w in left_words:
