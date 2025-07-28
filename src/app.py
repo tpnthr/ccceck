@@ -21,8 +21,6 @@ ALIGN_MODEL_NAME = "jonatasgrosman/wav2vec2-large-xlsr-53-polish"
 MAX_PAUSE = 1.5  # Max Pause of the fraze
 ALLOW_SHUTDOWN = True
 
-app = FastAPI()
-
 ASR_MODEL = whisperx.load_model(WHISPER_MODEL, DEVICE)
 ALIGN_MODEL, ALIGN_META = whisperx.load_align_model(language_code="pl", device=DEVICE, model_name=ALIGN_MODEL_NAME)
 AUDIO_EXTENSIONS = {".wav", ".mp3", ".m4a", ".flac", ".ogg", ".opus", ".aac"}
@@ -32,18 +30,13 @@ torch.backends.cuda.matmul.allow_tf32 = True
 
 configure_logging()
 
+app = FastAPI()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging()
-
-
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": f"Welcome to speech2text v1.0.1!"}
+    yield
 
 
 @app.middleware("http")
@@ -76,6 +69,11 @@ async def log_requests(request: Request, call_next):
             status_code=500,
         )
         return error_response
+
+
+@app.get("/")
+async def root():
+    return {"message": f"Welcome to speech2text v1.0.1!"}
 
 
 @app.get("/health")
