@@ -98,7 +98,7 @@ def transcribe(req: TranscribeRequest):
         for w in left_words:
             w["speaker"] = "client"
         for w in right_words:
-            w["speaker"] = "caller"
+            w["speaker"] = "agent"
 
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
