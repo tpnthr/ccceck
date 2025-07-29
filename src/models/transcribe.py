@@ -4,12 +4,12 @@ from typing import List, Dict
 
 import whisperx
 
-from app import ASR_MODEL, ALIGN_MODEL, ALIGN_META, DEVICE
-from utils.format import gen_srt, gen_vtt
-from utils.logging import log, warn
+from config import ALIGN_MODEL, ALIGN_META, DEVICE, ASR_MODEL
 
 
 def transcribe_channel(path: str) -> List[Dict]:
     result = ASR_MODEL.transcribe(path)
-    aligned = whisperx.align(result["segments"], ALIGN_MODEL, ALIGN_META, path, device=DEVICE)
+    audio_np = whisperx.load_audio(path)  # load audio as np.ndarray for alignment
+    logger.log(type(audio_np), audio_np.shape if hasattr(audio_np, "shape") else None)
+    aligned = whisperx.align(result["segments"], ALIGN_MODEL, ALIGN_META, audio_np, device=DEVICE)
     return aligned["word_segments"]

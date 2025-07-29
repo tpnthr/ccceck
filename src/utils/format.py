@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from app import MAX_PAUSE
+from config import MAX_PAUSE
 
 
 def group_words(words: List[Dict]) -> List[Dict]:

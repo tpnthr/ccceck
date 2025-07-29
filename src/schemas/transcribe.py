@@ -3,7 +3,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 class TranscribeRequest(BaseModel):
-    input: str
+    input: str                    # file path or URL
     language: Optional[str] = None
     need_alignment: Optional[bool] = None
     return_srt: Optional[bool] = False
