@@ -3,3 +3,6 @@
 /data/temp/*
 .env
 /.venv/
+/src/data/input/*
+/src/data/output/*
+/src/data/temp/*
