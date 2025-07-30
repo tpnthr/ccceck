@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from models.transcribe import transcribe_channel
 from schemas.transcribe import TranscribeRequest
 from utils.file import save_transcription_text, DATA_TEMP_DIR, prepare_audio_input
-from utils.format import group_words
+from utils.format import group_words, render_stereo_dialogue_lines
 from utils.sound import split_stereo
 from loguru import logger
 
@@ -28,11 +28,14 @@ def transcribe(req: TranscribeRequest):
             w["speaker"] = "agent"
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
-        transcript_text = "\n".join(
-            [f'{r["speaker"]}: {" ".join(r["text"])}' for r in grouped_dialogue]
-        )
-        output_path = save_transcription_text(transcript_text, audio_file)
-        return {"success": True, "dialogue": grouped_dialogue, "transcript_file": output_path}
+        dialog_lines = render_stereo_dialogue_lines(grouped_dialogue)
+        output_path = save_transcription_text(dialog_lines, audio_file)
+        return {
+            "success": True,
+            "json": grouped_dialogue,
+            "dialog": dialog_lines,
+            "transcript_file": output_path
+        }
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=400, detail=str(e))
@@ -65,21 +68,15 @@ def transcribe_dialog(req: TranscribeRequest):
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
 
-        # Join the entire dialogue text as well
-        full_text = " ".join([w["word"] for w in all_words])
+        dialog_lines = render_stereo_dialogue_lines(grouped_dialogue)
 
-        transcript_text = "\n".join(
-            [f'{r["speaker"]}: {" ".join(r["text"])}' for r in grouped_dialogue]
-        )
-
-        output_path = save_transcription_text(transcript_text, audio_file)
-
+        output_path = save_transcription_text(dialog_lines, audio_file)
         return {
             "success": True,
-            "word_by_word": all_words,
-            "dialogue": grouped_dialogue,
-            "transcript_text": transcript_text,
-            "transcript_file": output_path,
+            "json": grouped_dialogue,
+            "words": all_words,
+            "dialog": dialog_lines,
+            "transcript_file": output_path
         }
     except Exception as e:
         logger.error(e)
