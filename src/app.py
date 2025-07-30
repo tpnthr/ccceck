@@ -121,5 +121,9 @@ app.include_router(stereo_router, prefix="/stereo", tags=["Stereo"])
 from routes.mono import router as mono_router
 app.include_router(mono_router, prefix="/mono", tags=["Mono"])
 
+from routes.file import router as file_router
+app.include_router(file_router, prefix="/file", tags=["File"])
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
