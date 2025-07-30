@@ -44,7 +44,7 @@ def transcribe(req: TranscribeRequest):
                 raise HTTPException(status_code=404, detail="File not found")
 
 
-@router.post("/transcribe/dialog")
+@router.post("/transcribe/word-by-word")
 def transcribe_dialog(req: TranscribeRequest):
     audio_file = prepare_audio_input(req.input)
     tmp_files = []

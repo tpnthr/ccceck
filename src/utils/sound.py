@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 from typing import Tuple
 
+from config import DATA_TEMP_DIR
+
 
 def ensure_wav_mono16k(path: str) -> str:
     if shutil.which("ffmpeg") is None:
@@ -33,11 +35,8 @@ def split_stereo(path: str) -> Tuple[str, str]:
     if shutil.which("ffmpeg") is None:
         raise RuntimeError("ffmpeg not found")
 
-    TEMP_DIR = pathlib.Path(__file__).parent.parent / "data" / "temp"
-    TEMP_DIR.mkdir(parents=True, exist_ok=True)
-
-    left = tempfile.NamedTemporaryFile(dir=str(TEMP_DIR), suffix="_left.wav", delete=False)
-    right = tempfile.NamedTemporaryFile(dir=str(TEMP_DIR), suffix="_right.wav", delete=False)
+    left = tempfile.NamedTemporaryFile(dir=str(DATA_TEMP_DIR), suffix="_left.wav", delete=False)
+    right = tempfile.NamedTemporaryFile(dir=str(DATA_TEMP_DIR), suffix="_right.wav", delete=False)
     left.close()
     right.close()
 

@@ -3,7 +3,7 @@ import urllib
 
 import requests
 
-from config import AUDIO_EXTENSIONS
+from config import AUDIO_EXTENSIONS, DATA_TEMP_DIR, DATA_OUTPUT_DIR, DATA_INPUT_DIR
 
 
 def is_url(s: str) -> bool:
@@ -29,7 +29,6 @@ def download_url(url: str) -> str:
         filename += ".wav"
 
     target_file = DATA_INPUT_DIR / filename
-
     # If already exists, optionally skip or overwrite (your choice, here we overwrite)
     # Could add logic to check and rename if file exists (adding suffix) if needed
 
@@ -41,12 +40,7 @@ def download_url(url: str) -> str:
             for chunk in r.iter_content(1024 * 1024):
                 if chunk:
                     f.write(chunk)
-
     return str(target_file)
-
-
-DATA_INPUT_DIR = pathlib.Path("data/input")
-DATA_INPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def prepare_audio_input(input_str: str) -> str:
@@ -62,17 +56,11 @@ def prepare_audio_input(input_str: str) -> str:
 
 import shutil
 
-DATA_TEMP_DIR = pathlib.Path("data/temp")
-DATA_TEMP_DIR.mkdir(parents=True, exist_ok=True)
-
 def move_to_temp(file_path: str) -> str:
     p = pathlib.Path(file_path)
     target = DATA_TEMP_DIR / p.name
     shutil.move(file_path, target)
     return str(target)
-
-DATA_OUTPUT_DIR = pathlib.Path("data/output")
-DATA_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def save_transcription_text(output_text: str, input_file_path: str):
     input_path = pathlib.Path(input_file_path)
