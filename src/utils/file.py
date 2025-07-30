@@ -12,12 +12,23 @@ def is_url(s: str) -> bool:
 
 def download_url(url: str) -> str:
     parsed = urllib.parse.urlparse(url)
-    name = pathlib.Path(parsed.path).name or "audio.wav"
+    qs = urllib.parse.parse_qs(parsed.query)
 
-    if not any(name.lower().endswith(ext) for ext in AUDIO_EXTENSIONS):
-        name += ".wav"
+    # Try to get the filename from the query parameter
+    filename = None
+    if 'filename' in qs and qs['filename']:
+        # Use the last part after any slashes
+        filename = pathlib.Path(qs['filename'][0]).name
 
-    target_file = DATA_INPUT_DIR / name
+    # If not in query, or query param is empty, fall back to parsed path's name
+    if not filename:
+        filename = pathlib.Path(parsed.path).name or "audio.wav"
+
+    # Ensure it ends with a known audio extension
+    if not any(filename.lower().endswith(ext) for ext in AUDIO_EXTENSIONS):
+        filename += ".wav"
+
+    target_file = DATA_INPUT_DIR / filename
 
     # If already exists, optionally skip or overwrite (your choice, here we overwrite)
     # Could add logic to check and rename if file exists (adding suffix) if needed
