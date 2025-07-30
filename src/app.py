@@ -105,13 +105,13 @@ def health():
 
 
 @app.post("/shutdown")
-def shutdown():
+async def shutdown():
     if not ALLOW_SHUTDOWN:
         return {"success": False, "error": "Shutdown not enabled"}
     logger.info("Shutdown requested …")
     import threading, sys as _sys
-    threading.Timer(0.5, lambda: _sys.exit(0)).start()
-    return {"success": True, "message": "Service exiting"}
+    threading.Timer(1, lambda: _sys.exit(0)).start()
+    return {"success": True, "message": "Service shutting down"}
 
 
 from routes.stereo import router as stereo_router
