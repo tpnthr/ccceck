@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from models.transcribe import transcribe_channel
 from schemas.transcribe import TranscribeRequest
 from utils.file import prepare_audio_input, save_transcription_text
-from utils.logger import logger
+from loguru import logger
 
 # Create the stereo router
 router = APIRouter()

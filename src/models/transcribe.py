@@ -5,6 +5,7 @@ from typing import List, Dict
 import whisperx
 
 from config import ALIGN_MODEL, ALIGN_META, DEVICE, ASR_MODEL
+from loguru import logger
 
 
 def transcribe_channel(path: str) -> List[Dict]:

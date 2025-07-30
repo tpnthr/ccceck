@@ -8,7 +8,7 @@ from schemas.transcribe import TranscribeRequest
 from utils.file import save_transcription_text, DATA_TEMP_DIR, prepare_audio_input
 from utils.format import group_words
 from utils.sound import split_stereo
-from utils.logger import logger
+from loguru import logger
 
 # Create the stereo router
 router = APIRouter()
