@@ -11,6 +11,6 @@ from loguru import logger
 def transcribe_channel(path: str) -> List[Dict]:
     result = ASR_MODEL.transcribe(path)
     audio_np = whisperx.load_audio(path)  # load audio as np.ndarray for alignment
-    logger.log(type(audio_np), audio_np.shape if hasattr(audio_np, "shape") else None)
+    logger.info(type(audio_np), audio_np.shape if hasattr(audio_np, "shape") else None)
     aligned = whisperx.align(result["segments"], ALIGN_MODEL, ALIGN_META, audio_np, device=DEVICE)
     return aligned["word_segments"]
