@@ -14,8 +14,9 @@ def transcribe(req: TranscribeRequest):
     try:
         words = transcribe_channel(audio_file)
         transcript_text = " ".join([w["word"] for w in words])
-        output_path = save_transcription_text(transcript_text, audio_file)
         dialog_lines = render_mono_dialogue_lines(words)
+        dialog_lines = "\n".join(dialog_lines)
+        output_path = save_transcription_text(dialog_lines, audio_file)
         return {
             "success": True,
             "json": words,

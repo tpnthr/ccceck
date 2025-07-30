@@ -29,6 +29,7 @@ def transcribe(req: TranscribeRequest):
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
         dialog_lines = render_stereo_dialogue_lines(grouped_dialogue)
+        dialog_lines = "\n".join(dialog_lines)
         output_path = save_transcription_text(dialog_lines, audio_file)
         return {
             "success": True,
@@ -69,7 +70,7 @@ def transcribe_dialog(req: TranscribeRequest):
         grouped_dialogue = group_words(all_words)
 
         dialog_lines = render_stereo_dialogue_lines(grouped_dialogue)
-
+        dialog_lines = "\n".join(dialog_lines)
         output_path = save_transcription_text(dialog_lines, audio_file)
         return {
             "success": True,
