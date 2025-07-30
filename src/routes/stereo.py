@@ -20,30 +20,19 @@ def transcribe(req: TranscribeRequest):
     tmp_files = []
     try:
         left_path, right_path = split_stereo(audio_file)
-
         left_words = transcribe_channel(left_path)
         right_words = transcribe_channel(right_path)
-
-        # Add speaker tags
         for w in left_words:
             w["speaker"] = "client"
         for w in right_words:
             w["speaker"] = "agent"
-
         all_words = left_words + right_words
-
-        # Group words into dialogue
         grouped_dialogue = group_words(all_words)
-
-        # Join grouped text lines for output file
         transcript_text = "\n".join(
             [f'{r["speaker"]}: {" ".join(r["text"])}' for r in grouped_dialogue]
         )
-
         output_path = save_transcription_text(transcript_text, audio_file)
-
         return {"success": True, "dialogue": grouped_dialogue, "transcript_file": output_path}
-
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=400, detail=str(e))
