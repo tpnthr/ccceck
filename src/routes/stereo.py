@@ -52,10 +52,10 @@ def transcribe_dialog(req: TranscribeRequest):
         left_path, right_path = split_stereo(audio_file)
         left_path = shutil.move(left_path, DATA_TEMP_DIR / pathlib.Path(left_path).name)
         right_path = shutil.move(right_path, DATA_TEMP_DIR / pathlib.Path(right_path).name)
-        tmp_files.extend([left_path, right_path])
+        tmp_files.extend([str(left_path), str(right_path)])
 
-        left_words = transcribe_channel(left_path)
-        right_words = transcribe_channel(right_path)
+        left_words = transcribe_channel(str(left_path))
+        right_words = transcribe_channel(str(right_path))
 
         for w in left_words:
             w["speaker"] = "client"
