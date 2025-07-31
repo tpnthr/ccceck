@@ -20,8 +20,8 @@ def transcribe(req: TranscribeRequest):
     tmp_files = []
     try:
         left_path, right_path = split_stereo(audio_file)
-        left_words = transcribe_channel(left_path)
-        right_words = transcribe_channel(right_path)
+        left_words = transcribe_channel(left_path, language=req.language, needs_alignment=req.need_alignment)
+        right_words = transcribe_channel(right_path, language=req.language, needs_alignment=req.need_alignment)
         for w in left_words:
             w["speaker"] = "client"
         for w in right_words:
@@ -58,8 +58,8 @@ def transcribe_dialog(req: TranscribeRequest):
         right_path = shutil.move(right_path, DATA_TEMP_DIR / pathlib.Path(right_path).name)
         tmp_files.extend([str(left_path), str(right_path)])
 
-        left_words = transcribe_channel(str(left_path))
-        right_words = transcribe_channel(str(right_path))
+        left_words = transcribe_channel(str(left_path), language=req.language, needs_alignment=req.need_alignment)
+        right_words = transcribe_channel(str(right_path), language=req.language, needs_alignment=req.need_alignment)
 
         for w in left_words:
             w["speaker"] = "client"
