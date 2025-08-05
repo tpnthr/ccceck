@@ -12,7 +12,7 @@ router = APIRouter()
 def transcribe(req: TranscribeRequest):
     audio_file = prepare_audio_input(req.input)
     try:
-        words = transcribe_channel(audio_file, language=req.language, needs_alignment=req.need_alignment)
+        words = transcribe_channel(audio_file, language=req.language.lower(), needs_alignment=req.need_alignment)
         transcript_text = " ".join([w["word"] for w in words])
         dialog_lines = render_mono_dialogue_lines(words)
         dialog_lines = "\n".join(dialog_lines)

@@ -23,16 +23,16 @@ def transcribe(req: TranscribeRequest):
         left_words = transcribe_channel(left_path, language=req.language, needs_alignment=req.need_alignment)
         right_words = transcribe_channel(right_path, language=req.language, needs_alignment=req.need_alignment)
 
-        if not req.reverse_speaker:
+        if req.label_speakers:
             for w in left_words:
                 w["speaker"] = "client"
             for w in right_words:
                 w["speaker"] = "agent"
         else:
             for w in left_words:
-                w["speaker"] = "agent"
+                w["speaker"] = "speaker1"
             for w in right_words:
-                w["speaker"] = "client"
+                w["speaker"] = "speaker2"
 
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
@@ -69,16 +69,16 @@ def transcribe_dialog(req: TranscribeRequest):
         left_words = transcribe_channel(str(left_path), language=req.language, needs_alignment=req.need_alignment)
         right_words = transcribe_channel(str(right_path), language=req.language, needs_alignment=req.need_alignment)
 
-        if not req.reverse_speaker:
+        if req.label_speakers:
             for w in left_words:
                 w["speaker"] = "client"
             for w in right_words:
                 w["speaker"] = "agent"
         else:
             for w in left_words:
-                w["speaker"] = "agent"
+                w["speaker"] = "speaker1"
             for w in right_words:
-                w["speaker"] = "client"
+                w["speaker"] = "speaker2"
 
         all_words = left_words + right_words
         grouped_dialogue = group_words(all_words)
