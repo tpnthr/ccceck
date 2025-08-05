@@ -15,7 +15,7 @@ from loguru import logger
 #     aligned = whisperx.align(result["segments"], ALIGN_MODEL, ALIGN_META, audio_np, device=DEVICE)
 #     return aligned["word_segments"]
 
-def transcribe_channel(path: str, needs_alignment: bool = True, language: str = "EN") -> List[Dict]:
+def transcribe_channel(path: str, needs_alignment: bool = True, language: str = "en") -> List[Dict]:
     # Pass language as an argument if your model supports it (check your model docs)
     result = ASR_MODEL.transcribe(path, language=language)
     if needs_alignment:

@@ -8,6 +8,7 @@ class TranscribeRequest(BaseModel):
     need_alignment: Optional[bool] = None
     return_srt: Optional[bool] = False
     return_vtt: Optional[bool] = False
+    reverse_speaker: Optional[bool] = False
 
 
 class BatchRequest(BaseModel):
@@ -16,3 +17,4 @@ class BatchRequest(BaseModel):
     need_alignment: Optional[bool] = None
     return_srt: Optional[bool] = False
     return_vtt: Optional[bool] = False
+    reverse_speaker: Optional[bool] = False
