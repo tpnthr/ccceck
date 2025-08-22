@@ -71,48 +71,20 @@ def health():
     return {"success": True, "device": DEVICE, "model": WHISPER_MODEL}
 
 
-# @app.post("/transcribe")
-# def transcribe(req: TranscribeRequest):
-#     audio_file = req.input
-#     tmp_files = []
-#
-#     try:
-#         left_path, right_path = split_stereo(audio_file)
-#         tmp_files.extend([left_path, right_path])
-#
-#         # left_words = transcribe_channel(left_path, language="pl")
-#         left_words = transcribe_channel(left_path)
-#         right_words = transcribe_channel(right_path)
-#
-#         for w in left_words:
-#             w["speaker"] = "client"
-#         for w in right_words:
-#             w["speaker"] = "agent"
-#
-#         all_words = left_words + right_words
-#         grouped_dialogue = group_words(all_words)
-#
-#         for r in grouped_dialogue:
-#             r["text"] = " ".join(r["text"])
-#
-#         return {"success": True, "dialogue": grouped_dialogue}
-#
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#     finally:
-#         for f in tmp_files:
-#             os.unlink(f)
-
 
 @app.post("/shutdown")
 async def shutdown():
     if not ALLOW_SHUTDOWN:
         return {"success": False, "error": "Shutdown not enabled"}
     logger.info("Shutdown requested …")
-    import threading, sys as _sys
-    threading.Timer(1, lambda: _sys.exit(0)).start()
-    return {"success": True, "message": "Service shutting down"}
 
+    import threading
+    import sys
+    def exit_process():
+        sys.exit(0)
+
+    threading.Timer(1, exit_process).start()
+    return {"success": True, "message": "Service shutting down"}
 
 from routes.stereo import router as stereo_router
 
