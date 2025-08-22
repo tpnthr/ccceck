@@ -1,5 +1,6 @@
 import os
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict
 
 import whisperx
@@ -26,3 +27,11 @@ def transcribe_channel(path: str, needs_alignment: bool = True, language: str = 
     else:
         # Return just segment-level data if alignment isn't needed
         return result["segments"]
+
+def parallel_transcribe(paths, needs_alignment=True, language="pl"):
+    results = []
+    with ThreadPoolExecutor(max_workers=len(paths)) as executor:
+        futures = [executor.submit(transcribe_channel, path, needs_alignment, language) for path in paths]
+        for future in futures:
+            results.append(future.result())
+    return results

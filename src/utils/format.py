@@ -3,7 +3,7 @@ from typing import List, Dict
 from config import MAX_PAUSE
 
 
-def group_words(words: List[Dict]) -> List[Dict]:
+def     group_words(words: List[Dict]) -> List[Dict]:
     grouped, current = [], {"speaker": None, "start": None, "end": None, "text": []}
 
     for w in sorted(words, key=lambda x: x["start"]):

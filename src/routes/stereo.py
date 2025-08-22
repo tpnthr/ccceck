@@ -1,5 +1,6 @@
 import pathlib
 import shutil
+from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import APIRouter, HTTPException
 
@@ -54,6 +55,54 @@ def transcribe(req: TranscribeRequest):
                 pathlib.Path(f).unlink()
             except FileNotFoundError:
                 raise HTTPException(status_code=404, detail="File not found")
+
+@router.post("/transcribe/concurrent")
+def transcribe_concurrent(req: TranscribeRequest):
+    audio_file = prepare_audio_input(req.input)
+    tmp_files = []
+    try:
+        left_path, right_path = split_stereo(audio_file)
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_left = executor.submit(transcribe_channel, left_path, needs_alignment=req.need_alignment, language=req.language)
+            future_right = executor.submit(transcribe_channel, right_path, needs_alignment=req.need_alignment, language=req.language)
+
+            left_words = future_left.result()
+            right_words = future_right.result()
+
+        if req.label_speakers:
+            for w in left_words:
+                w["speaker"] = "client"
+            for w in right_words:
+                w["speaker"] = "agent"
+        else:
+            for w in left_words:
+                w["speaker"] = "speaker1"
+            for w in right_words:
+                w["speaker"] = "speaker2"
+
+        all_words = left_words + right_words
+        grouped_dialogue = group_words(all_words)
+        dialog_lines = render_stereo_dialogue_lines(grouped_dialogue)
+        dialog_text = "\n".join(dialog_lines)
+        output_path = save_transcription_text(dialog_text, audio_file)
+
+        return {
+            "success": True,
+            "json": grouped_dialogue,
+            "dialog": dialog_text,
+            "transcript_file": output_path
+        }
+
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        for f in tmp_files:
+            try:
+                pathlib.Path(f).unlink()
+            except FileNotFoundError:
+                logger.warning(f"File not found during cleanup: {f}")
 
 
 @router.post("/transcribe/word-by-word")
