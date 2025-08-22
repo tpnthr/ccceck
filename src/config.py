@@ -17,7 +17,8 @@ LANGUAGE_DEFAULT = "pl"
 ALIGN_MODEL_NAME = "jonatasgrosman/wav2vec2-large-xlsr-53-polish"
 MAX_PAUSE = 1.5  # Max Pause of the fraze
 
-ASR_MODEL = whisperx.load_model(WHISPER_MODEL, DEVICE)
+torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+ASR_MODEL = whisperx.load_model(WHISPER_MODEL, DEVICE, device_id=None, compute_type="float16" if DEVICE == "cuda" else "float32")
 ALIGN_MODEL, ALIGN_META = whisperx.load_align_model(language_code="pl", device=DEVICE, model_name=ALIGN_MODEL_NAME)
 AUDIO_EXTENSIONS = {".wav", ".mp3", ".m4a", ".flac", ".ogg", ".opus", ".aac"}
 
@@ -30,4 +31,3 @@ DATA_TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 
 HF_TOKEN = "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"  # for gated alignment if needed
-torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
