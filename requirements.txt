@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+loguru
+requests
+soundfile
+transformers
+optuna
+whisperx @ git+https://github.com/m-bain/whisperX.git
