@@ -1,24 +1,29 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10-slim
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app/src
+    PYTHONPATH=/app/src \
+    PIP_ROOT_USER_ACTION=ignore
 
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-venv \
+        build-essential \
         ffmpeg \
         git \
-        build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 COPY requirements.txt ./
 
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir torch==2.2.2+cpu torchaudio==2.2.2+cpu --index-url https://download.pytorch.org/whl/cpu \
-    && pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip \
+    && python -m pip install torch==2.2.2+cu121 torchaudio==2.2.2+cu121 --index-url https://download.pytorch.org/whl/cu121 \
+    && python -m pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
